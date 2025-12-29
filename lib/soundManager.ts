@@ -49,13 +49,13 @@ class SoundManager {
   /**
    * Play a sound effect
    */
-  play(soundType: SoundType, options?: { volume?: number; loop?: boolean; pitch?: number }) {
-    if (this.isMuted) return;
+  play(soundType: SoundType, options?: { volume?: number; loop?: boolean; pitch?: number }): HTMLAudioElement | null {
+    if (this.isMuted) return null;
 
     const sound = this.sounds.get(soundType);
     if (!sound) {
       console.warn(`Sound "${soundType}" not found`);
-      return;
+      return null;
     }
 
     // Clone the audio to allow overlapping sounds
