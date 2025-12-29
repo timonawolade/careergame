@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { ArrowLeft, Star, Trophy, Sparkles, Award } from 'lucide-react';
 import Link from 'next/link';
+import soundManager from '@/lib/soundManager';
 
 type Ingredient = {
   id: string;
@@ -21,6 +22,13 @@ export default function IronChefGame() {
   const [totalScore, setTotalScore] = useState(0);
   const [judgeFeedback, setJudgeFeedback] = useState('');
   const [roundScores, setRoundScores] = useState<number[]>([]);
+  
+  // Cleanup all sounds on unmount
+  useEffect(() => {
+    return () => {
+      soundManager.stopAll();
+    };
+  }, []);
 
   const allIngredients: Ingredient[] = [
     // Proteins
@@ -68,6 +76,7 @@ export default function IronChefGame() {
   };
 
   const startGame = () => {
+    soundManager.playClick();
     setGameState('selecting');
     setRound(1);
     setTotalScore(0);
@@ -78,6 +87,7 @@ export default function IronChefGame() {
   };
 
   const toggleIngredient = (ingredient: Ingredient) => {
+    soundManager.playClick(); // Play click when selecting ingredients
     if (selectedIngredients.find(i => i.id === ingredient.id)) {
       setSelectedIngredients(selectedIngredients.filter(i => i.id !== ingredient.id));
     } else {
@@ -89,20 +99,24 @@ export default function IronChefGame() {
 
   const submitDish = () => {
     if (selectedIngredients.length < 3) {
+      soundManager.playWrong();
       alert('Select at least 3 ingredients!');
       return;
     }
     
     if (!dishName.trim()) {
+      soundManager.playWrong();
       alert('Give your dish a name!');
       return;
     }
     
+    soundManager.playClick();
     setGameState('judging');
     
     // Calculate score based on ingredient combinations
     setTimeout(() => {
       const score = calculateDishScore();
+      soundManager.playSuccess(); // Play success sound when dish is judged
       setJudgeScore(score);
       setTotalScore(totalScore + score);
       setRoundScores([...roundScores, score]);
@@ -191,6 +205,7 @@ export default function IronChefGame() {
   };
 
   const nextRound = () => {
+    soundManager.playClick();
     if (round < 3) {
       setRound(round + 1);
       setGameState('selecting');
@@ -200,7 +215,8 @@ export default function IronChefGame() {
       setJudgeScore(0);
       setJudgeFeedback('');
     } else {
-      // Game complete!
+      // Game complete! Play victory sound
+      soundManager.playVictory();
       window.location.href = '/careers/chef';
     }
   };

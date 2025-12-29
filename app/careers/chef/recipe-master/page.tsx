@@ -1,8 +1,9 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { ArrowLeft, Clock, Star, Trophy, RotateCcw } from 'lucide-react';
 import Link from 'next/link';
+import soundManager from '@/lib/soundManager';
 
 type Ingredient = {
   id: string;
@@ -22,6 +23,22 @@ export default function RecipeMasterGame() {
   const [draggedItem, setDraggedItem] = useState<string | null>(null);
   const [showFeedback, setShowFeedback] = useState<{ type: 'correct' | 'wrong', message: string } | null>(null);
   const [ingredients, setIngredients] = useState<Ingredient[]>([]);
+  const [displayIngredients, setDisplayIngredients] = useState<Ingredient[]>([]); // Randomized display order
+  
+  // Sound management
+  const cookingSoundRef = useRef<HTMLAudioElement | null>(null);
+  
+  // Cleanup all sounds on unmount
+  useEffect(() => {
+    return () => {
+      // Stop all sounds when component unmounts
+      if (cookingSoundRef.current) {
+        soundManager.stop(cookingSoundRef.current);
+        cookingSoundRef.current = null;
+      }
+      soundManager.stopAll();
+    };
+  }, []);
 
   const recipes = [
     {
@@ -72,9 +89,31 @@ export default function RecipeMasterGame() {
 
   useEffect(() => {
     if (gameState === 'playing') {
-      setIngredients(currentRecipeData.ingredients.map(ing => ({ ...ing, used: false })));
+      const ingredientsCopy = currentRecipeData.ingredients.map(ing => ({ ...ing, used: false }));
+      setIngredients(ingredientsCopy);
+      
+      // Randomize the display order so kids have to think!
+      const shuffled = [...ingredientsCopy].sort(() => Math.random() - 0.5);
+      setDisplayIngredients(shuffled);
+      
       setCookingStage(0);
+      // Start cooking background sound
+      cookingSoundRef.current = soundManager.playCooking();
+    } else {
+      // Stop cooking sound when game ends
+      if (cookingSoundRef.current) {
+        soundManager.stop(cookingSoundRef.current);
+        cookingSoundRef.current = null;
+      }
     }
+    
+    // Cleanup on state change
+    return () => {
+      if (cookingSoundRef.current) {
+        soundManager.stop(cookingSoundRef.current);
+        cookingSoundRef.current = null;
+      }
+    };
   }, [gameState, currentRecipe]);
 
   useEffect(() => {
@@ -105,6 +144,9 @@ export default function RecipeMasterGame() {
     const correctIngredient = currentRecipeData.correctOrder[currentStep];
 
     if (draggedItem === correctIngredient) {
+      // Play correct sound
+      soundManager.playCorrect();
+      
       setShowFeedback({ type: 'correct', message: 'Perfect! ✨' });
       setScore(score + 100);
       
@@ -119,10 +161,19 @@ export default function RecipeMasterGame() {
         if (currentStep < currentRecipeData.correctOrder.length - 1) {
           setCurrentStep(currentStep + 1);
         } else {
+          // Recipe complete! Play success sound
+          if (cookingSoundRef.current) {
+            soundManager.stop(cookingSoundRef.current);
+            cookingSoundRef.current = null;
+          }
+          soundManager.playSuccess();
           setTimeout(() => setGameState('success'), 1500);
         }
       }, 1500);
     } else {
+      // Play wrong sound
+      soundManager.playWrong();
+      
       setShowFeedback({ type: 'wrong', message: 'Not yet! Try something else.' });
       setMistakes(mistakes + 1);
       
@@ -184,6 +235,7 @@ export default function RecipeMasterGame() {
   };
 
   const startCooking = () => {
+    soundManager.playClick();
     setGameState('playing');
     setTimeLeft(90);
     setCurrentStep(0);
@@ -194,6 +246,7 @@ export default function RecipeMasterGame() {
   };
 
   const nextRecipe = () => {
+    soundManager.playClick();
     if (currentRecipe < recipes.length - 1) {
       setCurrentRecipe(currentRecipe + 1);
       setGameState('instructions');
@@ -272,11 +325,11 @@ export default function RecipeMasterGame() {
                 </li>
                 <li className="flex items-start gap-3">
                   <div className="bg-orange-500 text-white rounded-full w-8 h-8 flex items-center justify-center font-black flex-shrink-0">2</div>
-                  <span className="text-orange-900 font-bold text-lg">Drag ingredients to the cooking area in the right order!</span>
+                  <span className="text-orange-900 font-bold text-lg">Think about the cooking order - what goes first?</span>
                 </li>
                 <li className="flex items-start gap-3">
                   <div className="bg-orange-500 text-white rounded-full w-8 h-8 flex items-center justify-center font-black flex-shrink-0">3</div>
-                  <span className="text-orange-900 font-bold text-lg">Use your brain - figure out what goes first!</span>
+                  <span className="text-orange-900 font-bold text-lg">Drag ingredients in the correct order to make {currentRecipeData.name}!</span>
                 </li>
               </ol>
             </div>
@@ -316,22 +369,28 @@ export default function RecipeMasterGame() {
                 </p>
                 
                 <div className="grid grid-cols-2 gap-4">
-                  {ingredients.map((ingredient) => (
-                    <div
-                      key={ingredient.id}
-                      draggable={!ingredient.used}
-                      onDragStart={() => handleDragStart(ingredient.id)}
-                      className={`p-4 rounded-2xl border-4 text-center transition-all ${
-                        ingredient.used 
-                          ? 'border-gray-200 opacity-30 cursor-not-allowed' 
-                          : 'border-orange-300 hover:border-orange-500 cursor-move hover:scale-110 shadow-lg'
-                      }`}
-                    >
-                      <div className="text-5xl mb-2">{ingredient.emoji}</div>
-                      <div className="text-sm font-bold text-gray-700">{ingredient.name}</div>
-                      {ingredient.used && <div className="text-2xl mt-1">✓</div>}
-                    </div>
-                  ))}
+                  {displayIngredients.map((ingredient) => {
+                    // Find the actual ingredient state (used or not)
+                    const actualIngredient = ingredients.find(ing => ing.id === ingredient.id);
+                    const isUsed = actualIngredient?.used || false;
+                    
+                    return (
+                      <div
+                        key={ingredient.id}
+                        draggable={!isUsed}
+                        onDragStart={() => handleDragStart(ingredient.id)}
+                        className={`p-4 rounded-2xl border-4 text-center transition-all ${
+                          isUsed 
+                            ? 'border-gray-200 opacity-30 cursor-not-allowed' 
+                            : 'border-orange-300 hover:border-orange-500 cursor-move hover:scale-110 shadow-lg'
+                        }`}
+                      >
+                        <div className="text-5xl mb-2">{ingredient.emoji}</div>
+                        <div className="text-sm font-bold text-gray-700">{ingredient.name}</div>
+                        {isUsed && <div className="text-2xl mt-1">✓</div>}
+                      </div>
+                    );
+                  })}
                 </div>
               </div>
             </div>
@@ -465,7 +524,10 @@ export default function RecipeMasterGame() {
               </div>
 
               <button
-                onClick={() => setGameState('instructions')}
+                onClick={() => {
+                  soundManager.playClick();
+                  setGameState('instructions');
+                }}
                 className="bg-gradient-to-r from-red-600 to-orange-600 text-white px-10 py-6 rounded-2xl font-black text-2xl shadow-xl hover:shadow-2xl transform hover:scale-105 transition-all flex items-center justify-center gap-3 mx-auto"
               >
                 <RotateCcw size={32} />

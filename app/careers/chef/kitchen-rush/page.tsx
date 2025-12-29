@@ -1,8 +1,9 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { ArrowLeft, Clock, Star, Trophy, Users, Zap, ChefHat } from 'lucide-react';
 import Link from 'next/link';
+import soundManager from '@/lib/soundManager';
 
 type Order = {
   id: string;
@@ -30,6 +31,26 @@ export default function KitchenRushGame() {
   const [customersServed, setCustomersServed] = useState(0);
   const [customersFailed, setCustomersFailed] = useState(0);
   const [combo, setCombo] = useState(0);
+  
+  // Sound management
+  const cookingSoundRef = useRef<HTMLAudioElement | null>(null);
+  const timerSoundRef = useRef<HTMLAudioElement | null>(null);
+  
+  // Cleanup all sounds on unmount
+  useEffect(() => {
+    return () => {
+      // Stop all sounds when component unmounts (leaving page)
+      if (cookingSoundRef.current) {
+        soundManager.stop(cookingSoundRef.current);
+        cookingSoundRef.current = null;
+      }
+      if (timerSoundRef.current) {
+        soundManager.stop(timerSoundRef.current);
+        timerSoundRef.current = null;
+      }
+      soundManager.stopAll();
+    };
+  }, []);
 
   const dishes = [
     {
@@ -152,6 +173,7 @@ export default function KitchenRushGame() {
       return;
     }
     if (selectedIngredients.length < 6) {
+      soundManager.playChopping(); // Play chopping sound
       setSelectedIngredients([...selectedIngredients, ingredient]);
     }
   };
@@ -160,11 +182,13 @@ export default function KitchenRushGame() {
     const customer = customers.find(c => c.id === customerId);
     if (!customer || customer.served) return;
     
+    soundManager.playClick(); // Play click sound
     setSelectedCustomer(customerId);
     setSelectedIngredients([]);
   };
 
   const clearIngredients = () => {
+    soundManager.playClick(); // Play click sound
     setSelectedIngredients([]);
   };
 
@@ -181,7 +205,9 @@ export default function KitchenRushGame() {
       selectedIngredients.every(ing => orderIngredients.includes(ing));
 
     if (isCorrect) {
-      // Correct order!
+      // Correct order! Play success sound
+      soundManager.playCorrect();
+      
       const basePoints = 100;
       const speedBonus = Math.floor(customer.order.patience * 2);
       const comboBonus = combo * 50;
@@ -203,7 +229,8 @@ export default function KitchenRushGame() {
         setLevel(level + 1);
       }
     } else {
-      // Wrong order!
+      // Wrong order! Play wrong sound
+      soundManager.playWrong();
       setCombo(0);
       setSelectedIngredients([]);
     }
@@ -221,6 +248,7 @@ export default function KitchenRushGame() {
   };
 
   const startGame = () => {
+    soundManager.playClick();
     setGameState('playing');
     setLevel(1);
     setScore(0);
@@ -230,6 +258,9 @@ export default function KitchenRushGame() {
     setCustomersServed(0);
     setCustomersFailed(0);
     setCombo(0);
+    
+    // Start cooking background sound
+    cookingSoundRef.current = soundManager.playCooking();
     
     // Start with 2 customers
     setTimeout(() => {
@@ -252,7 +283,18 @@ export default function KitchenRushGame() {
   };
 
   const endGame = () => {
+    // Stop cooking sound
+    if (cookingSoundRef.current) {
+      soundManager.stop(cookingSoundRef.current);
+      cookingSoundRef.current = null;
+    }
+    if (timerSoundRef.current) {
+      soundManager.stop(timerSoundRef.current);
+      timerSoundRef.current = null;
+    }
+    
     if (customersServed >= 15) {
+      soundManager.playVictory(); // Play victory sound
       setGameState('success');
     } else {
       setGameState('fail');
