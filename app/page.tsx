@@ -2,17 +2,13 @@
 
 import React, { useState } from 'react';
 import { 
-  Hammer, Stethoscope, ChefHat, Settings, Music, Volume2, VolumeX, 
-  Sparkles, Trophy, Star, Play, ArrowRight, CheckCircle, Zap, 
-  Heart, Brain, Rocket, GamepadIcon
+  Hammer, Stethoscope, ChefHat, Sparkles, Trophy, Star, Play, 
+  ArrowRight, Brain, Heart, Rocket, GamepadIcon, Menu, X
 } from 'lucide-react';
 import Link from 'next/link';
 
-export default function HomePage() {
-  const [soundEnabled, setSoundEnabled] = useState(true);
-  const [musicEnabled, setMusicEnabled] = useState(true);
-  const [showSettings, setShowSettings] = useState(false);
-  const [theme, setTheme] = useState('purple');
+export default function ProfessionalHomePage() {
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const careers = [
     {
@@ -53,18 +49,11 @@ export default function HomePage() {
     }
   ];
 
-  const themeColors = {
-    purple: 'from-purple-600 via-pink-600 to-orange-500',
-    blue: 'from-blue-500 via-cyan-500 to-teal-600',
-    green: 'from-emerald-400 via-teal-500 to-cyan-600',
-    orange: 'from-orange-400 via-rose-500 to-purple-600'
-  };
-
   const howItWorks = [
     {
       step: 1,
       title: 'Choose a Career',
-      description: 'Pick from exciting careers like Engineer, Doctor, or Pilot!',
+      description: 'Pick from exciting careers like Engineer, Doctor, or Chef!',
       icon: GamepadIcon,
       color: 'from-blue-500 to-cyan-500'
     },
@@ -87,367 +76,294 @@ export default function HomePage() {
   const benefits = [
     {
       title: 'Learn by Doing',
-      description: 'Kids explore careers through hands-on games, not just reading about them!',
+      description: 'Kids explore careers through hands-on games, not just reading!',
       icon: Brain,
       color: 'text-purple-600'
     },
     {
       title: 'Fun & Educational',
-      description: 'Subway Surfers quality graphics meet real educational value!',
+      description: 'Engaging gameplay meets real educational value!',
       icon: Heart,
       color: 'text-pink-600'
     },
     {
-      title: 'Build Real Skills',
-      description: 'From budgeting to physics, kids learn practical skills through play!',
-      icon: Zap,
+      title: 'Discover Your Passion',
+      description: 'Help kids find what they love before choosing a college major!',
+      icon: Rocket,
       color: 'text-orange-600'
-    },
-    {
-      title: 'Safe & Age-Appropriate',
-      description: 'Designed specifically for kids ages 6-15. No ads, no in-app purchases!',
-      icon: CheckCircle,
-      color: 'text-green-600'
     }
   ];
 
   return (
-    <div className={`min-h-screen bg-gradient-to-br ${themeColors[theme as keyof typeof themeColors]} relative overflow-hidden`}>
-      {/* Animated background blobs */}
-      <div className="absolute top-10 left-10 w-32 h-32 bg-white/10 rounded-full blur-3xl animate-pulse" />
-      <div className="absolute bottom-20 right-20 w-40 h-40 bg-white/10 rounded-full blur-3xl animate-pulse" />
-      <div className="absolute top-1/2 left-1/2 w-64 h-64 bg-white/5 rounded-full blur-3xl animate-pulse" />
-      
-      {/* Header */}
-      <div className="max-w-7xl mx-auto p-6">
-        <div className="flex items-center justify-between mb-8">
-          <div className="flex items-center gap-4">
-            <div className="bg-white p-4 rounded-3xl shadow-2xl transform hover:scale-110 transition-all">
-              <Sparkles size={48} className="text-purple-600" />
+    <div className="min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-orange-50">
+      {/* Navigation */}
+      <nav className="sticky top-0 z-50 bg-white/95 backdrop-blur-sm shadow-lg">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex justify-between items-center h-16 sm:h-20">
+            {/* Logo */}
+            <Link href="/" className="flex items-center gap-2 sm:gap-3">
+              <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-purple-600 to-pink-600 rounded-xl flex items-center justify-center shadow-lg">
+                <Sparkles className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
+              </div>
+              <div>
+                <h1 className="text-xl sm:text-2xl font-black bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
+                  CareerGame
+                </h1>
+                <p className="text-xs text-gray-600 hidden sm:block">Play Your Way to Your Dream Job!</p>
+              </div>
+            </Link>
+
+            {/* Desktop Menu */}
+            <div className="hidden md:flex items-center gap-6">
+              <Link href="/careers" className="text-gray-700 hover:text-purple-600 font-semibold transition-colors">
+                Careers
+              </Link>
+              <Link href="/about" className="text-gray-700 hover:text-purple-600 font-semibold transition-colors">
+                About
+              </Link>
+              <button className="bg-gradient-to-r from-purple-600 to-pink-600 text-white px-6 py-2.5 rounded-full font-bold shadow-lg hover:shadow-xl transform hover:scale-105 transition-all">
+                Start Playing! 🎮
+              </button>
             </div>
-            <div>
-              <h1 className="text-5xl md:text-6xl font-black text-white drop-shadow-2xl">CareerGame</h1>
-              <p className="text-white/90 text-lg md:text-xl font-bold mt-1">🎮 Play Your Way to Your Dream Job!</p>
-            </div>
-          </div>
-          
-          {/* Controls */}
-          <div className="hidden md:flex gap-3">
+
+            {/* Mobile Menu Button */}
             <button 
-              onClick={() => setSoundEnabled(!soundEnabled)} 
-              className="bg-white/90 p-4 rounded-2xl shadow-xl hover:scale-110 transition-all"
-              title="Toggle Sound"
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              className="md:hidden p-2 rounded-lg hover:bg-gray-100"
             >
-              {soundEnabled ? (
-                <Volume2 size={28} className="text-purple-600" />
-              ) : (
-                <VolumeX size={28} className="text-gray-400" />
-              )}
-            </button>
-            <button 
-              onClick={() => setMusicEnabled(!musicEnabled)} 
-              className="bg-white/90 p-4 rounded-2xl shadow-xl hover:scale-110 transition-all"
-              title="Toggle Music"
-            >
-              <Music size={28} className={musicEnabled ? 'text-purple-600' : 'text-gray-400'} />
-            </button>
-            <button 
-              onClick={() => setShowSettings(!showSettings)} 
-              className="bg-white/90 p-4 rounded-2xl shadow-xl hover:scale-110 transition-all"
-              title="Settings"
-            >
-              <Settings size={28} className="text-purple-600" />
+              {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
             </button>
           </div>
         </div>
 
-        {/* Settings Panel */}
-        {showSettings && (
-          <div className="bg-white/95 backdrop-blur-sm rounded-3xl shadow-2xl p-6 mb-8 border-4 border-white/50">
-            <h3 className="text-2xl font-black text-gray-800 mb-4">🎨 Choose Your Theme</h3>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              {Object.keys(themeColors).map((t) => (
-                <button
-                  key={t}
-                  onClick={() => setTheme(t)}
-                  className={`p-4 rounded-2xl bg-gradient-to-br ${themeColors[t as keyof typeof themeColors]} transform hover:scale-110 transition-all ${
-                    theme === t ? 'ring-4 ring-white scale-105' : ''
-                  }`}
-                >
-                  <div className="text-white font-black capitalize">{t}</div>
-                </button>
-              ))}
+        {/* Mobile Menu */}
+        {mobileMenuOpen && (
+          <div className="md:hidden bg-white border-t shadow-lg">
+            <div className="px-4 py-4 space-y-3">
+              <Link href="/careers" className="block py-2 text-gray-700 hover:text-purple-600 font-semibold">
+                Careers
+              </Link>
+              <Link href="/about" className="block py-2 text-gray-700 hover:text-purple-600 font-semibold">
+                About
+              </Link>
+              <button className="w-full bg-gradient-to-r from-purple-600 to-pink-600 text-white px-6 py-3 rounded-full font-bold shadow-lg">
+                Start Playing! 🎮
+              </button>
             </div>
           </div>
         )}
-      </div>
+      </nav>
 
-      {/* HERO SECTION */}
-      <div className="max-w-7xl mx-auto px-6 py-12 md:py-20">
-        <div className="text-center mb-12">
-          <div className="inline-block bg-white/20 backdrop-blur-sm rounded-full px-6 py-3 mb-6">
-            <p className="text-white font-bold text-lg">✨ The Future of Career Exploration ✨</p>
+      {/* Hero Section */}
+      <section className="pt-16 sm:pt-24 pb-12 sm:pb-20 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-7xl mx-auto text-center">
+          <div className="inline-flex items-center gap-2 bg-white px-4 py-2 rounded-full shadow-lg mb-6 sm:mb-8">
+            <Star className="w-4 h-4 sm:w-5 sm:h-5 text-yellow-500 fill-yellow-500" />
+            <span className="text-sm sm:text-base font-bold text-gray-700">The Future of Career Exploration</span>
+            <Star className="w-4 h-4 sm:w-5 sm:h-5 text-yellow-500 fill-yellow-500" />
           </div>
-          
-          <h2 className="text-5xl md:text-7xl font-black text-white mb-6 leading-tight drop-shadow-2xl">
-            Discover Your Dream Career<br />
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-yellow-300 via-pink-300 to-purple-300">
-              Through Play!
+
+          <h2 className="text-4xl sm:text-5xl md:text-7xl font-black mb-4 sm:mb-6">
+            <span className="bg-gradient-to-r from-purple-600 via-pink-600 to-orange-600 bg-clip-text text-transparent">
+              Discover Your Dream Career
             </span>
+            <br />
+            <span className="text-gray-800">Through Play!</span>
           </h2>
-          
-          <p className="text-xl md:text-2xl text-white/90 font-bold max-w-3xl mx-auto mb-8 leading-relaxed">
-            Kids ages 6-15 explore real careers through fun, interactive mini-games. 
-            Learn by doing, not just reading!
+
+          <p className="text-lg sm:text-xl md:text-2xl text-gray-600 font-semibold max-w-3xl mx-auto mb-8 sm:mb-10">
+            Kids ages 6-15 explore real careers through fun, interactive mini-games. Learn by doing, not just reading!
           </p>
 
-          <div className="flex flex-col md:flex-row gap-4 justify-center">
-            <Link
-              href="/careers/construction-engineer"
-              className="group bg-white text-purple-600 px-8 py-5 rounded-2xl font-black text-xl shadow-2xl hover:shadow-3xl transform hover:scale-105 transition-all inline-flex items-center gap-3 justify-center"
+          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+            <Link 
+              href="/careers"
+              className="w-full sm:w-auto bg-gradient-to-r from-purple-600 to-pink-600 text-white px-8 py-4 rounded-2xl font-black text-lg shadow-2xl hover:shadow-3xl transform hover:scale-105 transition-all flex items-center justify-center gap-2"
             >
-              <Rocket size={28} />
-              <span>Start Playing Now!</span>
-              <ArrowRight size={24} className="group-hover:translate-x-2 transition-transform" />
+              <GamepadIcon className="w-6 h-6" />
+              Start Playing Now!
             </Link>
-            
-            <button
-              onClick={() => document.getElementById('how-it-works')?.scrollIntoView({ behavior: 'smooth' })}
-              className="bg-white/20 backdrop-blur-sm text-white border-4 border-white/50 px-8 py-5 rounded-2xl font-black text-xl hover:bg-white/30 transition-all"
-            >
-              Learn More 👇
+            <button className="w-full sm:w-auto bg-white text-purple-600 px-8 py-4 rounded-2xl font-black text-lg shadow-xl hover:shadow-2xl transform hover:scale-105 transition-all border-2 border-purple-200">
+              Learn More
             </button>
           </div>
-        </div>
 
-        {/* Stats Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6">
-          <div className="bg-white/90 rounded-2xl p-6 shadow-xl border-4 border-yellow-300 transform hover:scale-105 transition-all">
-            <div className="flex items-center gap-3">
-              <Star size={40} className="text-yellow-500" />
-              <div>
-                <div className="text-3xl font-black text-yellow-600">0 XP</div>
-                <div className="text-gray-600 font-bold">Experience Points</div>
+          {/* Stats */}
+          <div className="grid grid-cols-3 gap-4 sm:gap-8 max-w-3xl mx-auto mt-12 sm:mt-16">
+            <div className="bg-white rounded-2xl p-4 sm:p-6 shadow-xl">
+              <div className="text-3xl sm:text-4xl font-black bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent mb-2">
+                10+
               </div>
+              <div className="text-xs sm:text-sm font-bold text-gray-600">Career Paths</div>
             </div>
-          </div>
-          <div className="bg-white/90 rounded-2xl p-6 shadow-xl border-4 border-purple-300 transform hover:scale-105 transition-all">
-            <div className="flex items-center gap-3">
-              <Trophy size={40} className="text-purple-500" />
-              <div>
-                <div className="text-3xl font-black text-purple-600">0</div>
-                <div className="text-gray-600 font-bold">Activities Completed</div>
+            <div className="bg-white rounded-2xl p-4 sm:p-6 shadow-xl">
+              <div className="text-3xl sm:text-4xl font-black bg-gradient-to-r from-orange-600 to-red-600 bg-clip-text text-transparent mb-2">
+                30+
               </div>
+              <div className="text-xs sm:text-sm font-bold text-gray-600">Mini-Games</div>
             </div>
-          </div>
-          <div className="bg-white/90 rounded-2xl p-6 shadow-xl border-4 border-green-300 transform hover:scale-105 transition-all">
-            <div className="flex items-center gap-3">
-              <Sparkles size={40} className="text-green-500" />
-              <div>
-                <div className="text-3xl font-black text-green-600">Level 1</div>
-                <div className="text-gray-600 font-bold">Current Level</div>
+            <div className="bg-white rounded-2xl p-4 sm:p-6 shadow-xl">
+              <div className="text-3xl sm:text-4xl font-black bg-gradient-to-r from-green-600 to-teal-600 bg-clip-text text-transparent mb-2">
+                100%
               </div>
+              <div className="text-xs sm:text-sm font-bold text-gray-600">Free to Play</div>
             </div>
           </div>
         </div>
-      </div>
+      </section>
 
-      {/* HOW IT WORKS SECTION */}
-      <div id="how-it-works" className="bg-white py-16 md:py-24">
-        <div className="max-w-7xl mx-auto px-6">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl md:text-6xl font-black text-gray-800 mb-4">
-              🎯 How It Works
-            </h2>
-            <p className="text-xl text-gray-600 font-bold max-w-2xl mx-auto">
+      {/* How It Works */}
+      <section className="py-12 sm:py-20 px-4 sm:px-6 lg:px-8 bg-white">
+        <div className="max-w-7xl mx-auto">
+          <div className="text-center mb-12 sm:mb-16">
+            <h3 className="text-3xl sm:text-4xl md:text-5xl font-black text-gray-800 mb-4">
+              How It Works
+            </h3>
+            <p className="text-lg sm:text-xl text-gray-600">
               Three simple steps to discovering your dream career!
             </p>
           </div>
 
-          <div className="grid md:grid-cols-3 gap-8">
-            {howItWorks.map((item) => {
-              const Icon = item.icon;
-              return (
-                <div
-                  key={item.step}
-                  className="relative bg-gradient-to-br from-gray-50 to-white rounded-3xl p-8 shadow-xl border-4 border-gray-100 transform hover:scale-105 transition-all"
-                >
-                  <div className="absolute -top-6 left-8">
-                    <div className={`w-12 h-12 rounded-full bg-gradient-to-br ${item.color} flex items-center justify-center text-white font-black text-2xl shadow-lg`}>
-                      {item.step}
-                    </div>
-                  </div>
-                  
-                  <div className={`w-20 h-20 rounded-2xl bg-gradient-to-br ${item.color} flex items-center justify-center mb-6 mt-4`}>
-                    <Icon size={40} className="text-white" />
-                  </div>
-                  
-                  <h3 className="text-2xl font-black text-gray-800 mb-3">{item.title}</h3>
-                  <p className="text-gray-600 font-bold text-lg leading-relaxed">{item.description}</p>
+          <div className="grid sm:grid-cols-3 gap-8">
+            {howItWorks.map((item) => (
+              <div key={item.step} className="text-center">
+                <div className={`w-20 h-20 mx-auto mb-6 bg-gradient-to-br ${item.color} rounded-2xl flex items-center justify-center shadow-xl`}>
+                  <item.icon className="w-10 h-10 text-white" />
                 </div>
-              );
-            })}
+                <div className="text-5xl font-black text-gray-300 mb-2">{item.step}</div>
+                <h4 className="text-2xl font-black text-gray-800 mb-3">{item.title}</h4>
+                <p className="text-gray-600 font-semibold">{item.description}</p>
+              </div>
+            ))}
           </div>
         </div>
-      </div>
+      </section>
 
-      {/* CAREER CARDS SECTION */}
-      <div className="max-w-7xl mx-auto px-6 py-16 md:py-24">
-        <h2 className="text-4xl md:text-6xl font-black text-white text-center mb-4 drop-shadow-2xl">
-          🌟 Choose Your Career Adventure!
-        </h2>
-        <p className="text-xl text-white/90 text-center font-bold mb-12">
-          Start with Construction Engineer - More careers coming soon!
-        </p>
-        
-        <div className="grid md:grid-cols-3 gap-8">
-          {careers.map((career) => {
-            const Icon = career.icon;
-            return (
-              <Link
-                key={career.id}
-                href={career.isLive ? career.path : '#'}
-                className={`group relative bg-white rounded-3xl shadow-2xl overflow-hidden transform hover:scale-105 hover:rotate-1 transition-all duration-300 border-4 border-white/50 ${
-                  !career.isLive ? 'cursor-not-allowed opacity-90' : ''
-                }`}
-                onClick={(e) => {
-                  if (!career.isLive) {
-                    e.preventDefault();
-                  }
-                }}
-              >
-                {/* Coming Soon Badge */}
-                {!career.isLive && (
-                  <div className="absolute top-4 right-4 z-20 bg-yellow-400 text-yellow-900 px-4 py-2 rounded-full font-black text-sm shadow-lg animate-bounce">
-                    🚧 Coming Soon!
-                  </div>
-                )}
-
-                {/* LIVE Badge */}
-                {career.isLive && (
-                  <div className="absolute top-4 right-4 z-20 bg-green-500 text-white px-4 py-2 rounded-full font-black text-sm shadow-lg flex items-center gap-2">
-                    <span className="w-2 h-2 bg-white rounded-full animate-pulse"></span>
-                    PLAY NOW!
-                  </div>
-                )}
-                
-                {/* Hero Image */}
-                <div className="relative h-80 overflow-hidden">
-                  <img 
-                    src={career.heroImage} 
-                    alt={career.name}
-                    className={`w-full h-full object-cover transform group-hover:scale-110 transition-all duration-500 ${
-                      !career.isLive ? 'grayscale' : ''
-                    }`}
-                  />
-                  <div className={`absolute inset-0 bg-gradient-to-t ${career.color} ${
-                    career.isLive ? 'opacity-40 group-hover:opacity-30' : 'opacity-60'
-                  } transition-all`} />
-                  
-                  {/* Career Badge */}
-                  <div className="absolute bottom-4 left-4 right-4">
-                    <div className="bg-white/95 backdrop-blur-sm rounded-2xl p-4 shadow-xl">
-                      <div className="flex items-center gap-2 mb-2">
-                        <Icon size={28} className="text-purple-600" />
-                        <h3 className="text-2xl font-black text-gray-800">{career.name}</h3>
-                      </div>
-                      <p className="text-2xl font-black text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-pink-600">
-                        {career.tagline}
-                      </p>
-                    </div>
-                  </div>
-                </div>
-                
-                {/* Description */}
-                <div className="p-6 bg-gradient-to-br from-gray-50 to-white">
-                  <p className="text-gray-700 font-bold text-lg mb-4 leading-relaxed">
-                    {career.description}
-                  </p>
-                  
-                  {career.isLive && (
-                    <div className="bg-green-100 border-2 border-green-300 rounded-xl p-3 mb-4">
-                      <p className="text-green-800 font-black text-sm">
-                        ✅ {career.gamesAvailable} Games Available Now!
-                      </p>
-                    </div>
-                  )}
-
-                  <div className={`${
-                    career.isLive 
-                      ? 'bg-gradient-to-r from-purple-600 via-pink-600 to-orange-500' 
-                      : 'bg-gray-300'
-                  } text-white py-4 rounded-2xl font-black text-xl transform ${
-                    career.isLive ? 'group-hover:scale-105 group-hover:shadow-2xl' : ''
-                  } transition-all text-center`}>
-                    {career.isLive ? '🚀 Start Your Journey →' : '🚧 Coming Soon'}
-                  </div>
-                </div>
-              </Link>
-            );
-          })}
-        </div>
-      </div>
-
-      {/* BENEFITS SECTION */}
-      <div className="bg-white/10 backdrop-blur-sm py-16 md:py-24">
-        <div className="max-w-7xl mx-auto px-6">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl md:text-6xl font-black text-white mb-4 drop-shadow-2xl">
-              💡 Why CareerGame?
-            </h2>
-            <p className="text-xl text-white/90 font-bold max-w-2xl mx-auto">
-              The perfect blend of education and entertainment!
+      {/* Career Cards */}
+      <section className="py-12 sm:py-20 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-7xl mx-auto">
+          <div className="text-center mb-12 sm:mb-16">
+            <h3 className="text-3xl sm:text-4xl md:text-5xl font-black text-gray-800 mb-4">
+              Explore Career Paths
+            </h3>
+            <p className="text-lg sm:text-xl text-gray-600">
+              Each career has 3 interactive mini-games!
             </p>
           </div>
 
-          <div className="grid md:grid-cols-2 gap-8">
-            {benefits.map((benefit, index) => {
-              const Icon = benefit.icon;
-              return (
-                <div
-                  key={index}
-                  className="bg-white rounded-3xl p-8 shadow-xl transform hover:scale-105 transition-all"
-                >
-                  <div className="flex items-start gap-4">
-                    <div className="flex-shrink-0">
-                      <Icon size={48} className={benefit.color} />
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
+            {careers.map((career) => (
+              <Link 
+                key={career.id}
+                href={career.path}
+                className="group"
+              >
+                <div className="bg-white rounded-3xl overflow-hidden shadow-xl hover:shadow-2xl transform hover:scale-105 transition-all">
+                  {/* Hero Image */}
+                  <div className="relative h-48 sm:h-56 overflow-hidden">
+                    <img 
+                      src={career.heroImage} 
+                      alt={career.name}
+                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+                    <div className="absolute bottom-4 left-4 right-4">
+                      <h4 className="text-2xl font-black text-white mb-1">{career.name}</h4>
+                      <p className="text-white/90 font-bold text-sm">{career.tagline}</p>
                     </div>
-                    <div>
-                      <h3 className="text-2xl font-black text-gray-800 mb-3">{benefit.title}</h3>
-                      <p className="text-gray-600 font-bold text-lg leading-relaxed">{benefit.description}</p>
+                  </div>
+
+                  {/* Content */}
+                  <div className="p-6">
+                    <p className="text-gray-600 font-semibold mb-4">{career.description}</p>
+                    
+                    <div className="flex flex-wrap gap-2 mb-4">
+                      <span className="bg-white/90 text-gray-800 px-4 py-2 rounded-full text-sm font-bold border-2 border-gray-200">
+                        🎮 {career.gamesAvailable} Interactive Games
+                      </span>
+                    </div>
+
+                    <div className={`bg-gradient-to-r ${career.color} text-white px-6 py-3 rounded-xl font-black flex items-center justify-center gap-2 group-hover:gap-4 transition-all`}>
+                      Start Playing
+                      <ArrowRight className="w-5 h-5" />
                     </div>
                   </div>
                 </div>
-              );
-            })}
+              </Link>
+            ))}
           </div>
         </div>
-      </div>
+      </section>
 
-      {/* CALL TO ACTION */}
-      <div className="max-w-7xl mx-auto px-6 py-16 md:py-24">
-        <div className="bg-white rounded-3xl shadow-2xl p-12 md:p-16 text-center border-8 border-white/30">
-          <h2 className="text-4xl md:text-6xl font-black text-gray-800 mb-6">
-            Ready to Explore Your Future? 🚀
-          </h2>
-          <p className="text-xl text-gray-600 font-bold mb-8 max-w-2xl mx-auto">
-            Join thousands of kids discovering their dream careers through play!
+      {/* Benefits */}
+      <section className="py-12 sm:py-20 px-4 sm:px-6 lg:px-8 bg-white">
+        <div className="max-w-7xl mx-auto">
+          <div className="text-center mb-12 sm:mb-16">
+            <h3 className="text-3xl sm:text-4xl md:text-5xl font-black text-gray-800 mb-4">
+              Why Kids Love CareerGame
+            </h3>
+          </div>
+
+          <div className="grid sm:grid-cols-3 gap-8">
+            {benefits.map((benefit, index) => (
+              <div key={index} className="text-center">
+                <benefit.icon className={`w-16 h-16 mx-auto mb-4 ${benefit.color}`} />
+                <h4 className="text-xl font-black text-gray-800 mb-3">{benefit.title}</h4>
+                <p className="text-gray-600 font-semibold">{benefit.description}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* CTA */}
+      <section className="py-12 sm:py-20 px-4 sm:px-6 lg:px-8 bg-gradient-to-br from-purple-600 via-pink-600 to-orange-600">
+        <div className="max-w-4xl mx-auto text-center">
+          <div className="text-6xl sm:text-7xl mb-6">🚀</div>
+          <h3 className="text-3xl sm:text-5xl font-black text-white mb-6">
+            Ready to Discover Your Future?
+          </h3>
+          <p className="text-xl sm:text-2xl text-white/90 font-semibold mb-10">
+            Join thousands of kids exploring careers through play!
           </p>
-          <Link
-            href="/careers/construction-engineer"
-            className="inline-flex items-center gap-3 bg-gradient-to-r from-purple-600 via-pink-600 to-orange-500 text-white px-10 py-6 rounded-2xl font-black text-2xl shadow-2xl hover:shadow-3xl transform hover:scale-105 transition-all"
+          <Link 
+            href="/careers"
+            className="inline-flex items-center gap-3 bg-white text-purple-600 px-8 sm:px-12 py-4 sm:py-6 rounded-2xl font-black text-lg sm:text-xl shadow-2xl hover:shadow-3xl transform hover:scale-105 transition-all"
           >
-            <Play size={32} />
-            <span>Start Playing Free!</span>
-            <ArrowRight size={28} />
+            <Trophy className="w-6 h-6 sm:w-8 sm:h-8" />
+            Start Your Journey Now!
           </Link>
         </div>
-      </div>
+      </section>
 
       {/* Footer */}
-      <div className="max-w-7xl mx-auto px-6 pb-12 text-center">
-        <p className="text-white/80 font-bold text-lg">💫 Made with love for future world-changers 💫</p>
-      </div>
+      <footer className="bg-gray-900 text-white py-8 sm:py-12 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-7xl mx-auto text-center">
+          <div className="flex items-center justify-center gap-3 mb-6">
+            <div className="w-10 h-10 bg-gradient-to-br from-purple-600 to-pink-600 rounded-xl flex items-center justify-center">
+              <Sparkles className="w-5 h-5" />
+            </div>
+            <span className="text-2xl font-black">CareerGame</span>
+          </div>
+          <p className="text-gray-400 mb-8">
+            Helping kids discover their dream careers through interactive play
+          </p>
+          <div className="flex flex-wrap justify-center gap-6 text-sm">
+            <Link href="/privacy" className="text-gray-400 hover:text-white transition-colors">
+              Privacy Policy
+            </Link>
+            <Link href="/terms" className="text-gray-400 hover:text-white transition-colors">
+              Terms of Service
+            </Link>
+            <Link href="/contact" className="text-gray-400 hover:text-white transition-colors">
+              Contact Us
+            </Link>
+          </div>
+          <div className="mt-8 text-gray-500 text-sm">
+            © 2024 CareerGame. Made with ❤️ for kids everywhere.
+          </div>
+        </div>
+      </footer>
     </div>
   );
 }
