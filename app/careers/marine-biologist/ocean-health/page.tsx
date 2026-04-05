@@ -1,11 +1,11 @@
-import KitchenRush from "@/app/components/games/game-kitchen-rush";
+import MarineBiologist from "@/app/components/games/game-marine-biologist";
 import BackButton from "@/app/components/BackButton";
 
 export default function Page() {
   return (
     <>
       <BackButton />
-      <KitchenRush />
+      <MarineBiologist />
     </>
   );
 }
